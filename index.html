@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Lancer1911 offline AI audio tools for Apple Silicon: ASR Live, ASR Offline, and TTS Offline." />
+  <title>Lancer1911 Offline AI Audio Tools</title>
+  <style>
+    :root {
+      --bg: #090b16;
+      --bg2: #101629;
+      --card: rgba(255, 255, 255, 0.075);
+      --card-strong: rgba(255, 255, 255, 0.12);
+      --text: #f7f8ff;
+      --muted: #b9c0d4;
+      --soft: #7f8aa8;
+      --line: rgba(255, 255, 255, 0.16);
+      --blue: #7cc7ff;
+      --purple: #b794ff;
+      --cyan: #75f4e6;
+      --green: #9be28f;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+      --radius: 28px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 15% 5%, rgba(124, 199, 255, 0.24), transparent 34%),
+        radial-gradient(circle at 85% 10%, rgba(183, 148, 255, 0.22), transparent 28%),
+        radial-gradient(circle at 50% 92%, rgba(117, 244, 230, 0.14), transparent 35%),
+        linear-gradient(135deg, var(--bg), #080a12 48%, #0e1022);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .page {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(18px);
+      background: rgba(9, 11, 22, 0.68);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .nav-inner {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 16px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 760;
+      letter-spacing: -0.02em;
+    }
+
+    .logo {
+      width: 38px;
+      height: 38px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+      box-shadow: 0 12px 30px rgba(124, 199, 255, 0.25);
+      color: #07101c;
+      font-weight: 900;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .nav-links a {
+      padding: 9px 12px;
+      border-radius: 999px;
+      transition: 0.2s ease;
+    }
+
+    .nav-links a:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text);
+    }
+
+    .hero {
+      padding: 86px 0 54px;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 44px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 13px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 22px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--green);
+      box-shadow: 0 0 22px var(--green);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(46px, 7vw, 84px);
+      line-height: 0.92;
+      letter-spacing: -0.07em;
+    }
+
+    .gradient-text {
+      background: linear-gradient(90deg, #ffffff, #cfe8ff 38%, #cdbbff 72%, #94fff2);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .hero p {
+      margin: 26px 0 0;
+      font-size: 19px;
+      line-height: 1.7;
+      color: var(--muted);
+      max-width: 690px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 34px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      min-height: 48px;
+      padding: 0 18px;
+      border-radius: 999px;
+      font-weight: 720;
+      border: 1px solid var(--line);
+      transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .button.primary {
+      color: #07101c;
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      border-color: transparent;
+    }
+
+    .button.secondary {
+      background: rgba(255, 255, 255, 0.065);
+      color: var(--text);
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.28);
+    }
+
+    .hero-panel {
+      position: relative;
+      min-height: 440px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.05)),
+        rgba(255, 255, 255, 0.04);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      padding: 22px;
+    }
+
+    .hero-panel::before {
+      content: "";
+      position: absolute;
+      inset: -30%;
+      background:
+        radial-gradient(circle at 25% 25%, rgba(124, 199, 255, 0.32), transparent 26%),
+        radial-gradient(circle at 78% 35%, rgba(183, 148, 255, 0.24), transparent 25%),
+        radial-gradient(circle at 50% 80%, rgba(117, 244, 230, 0.18), transparent 25%);
+      filter: blur(8px);
+      opacity: 0.9;
+    }
+
+    .mock-window {
+      position: relative;
+      height: 100%;
+      min-height: 396px;
+      border-radius: 22px;
+      background: rgba(6, 9, 18, 0.76);
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      overflow: hidden;
+    }
+
+    .window-bar {
+      height: 46px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .traffic {
+      width: 11px;
+      height: 11px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.34);
+    }
+
+    .wave {
+      padding: 30px 22px 20px;
+      display: flex;
+      align-items: flex-end;
+      gap: 7px;
+      height: 142px;
+    }
+
+    .bar {
+      flex: 1;
+      max-width: 16px;
+      min-width: 7px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, var(--cyan), var(--blue), var(--purple));
+      opacity: 0.92;
+    }
+
+    .bar:nth-child(1) { height: 36px; }
+    .bar:nth-child(2) { height: 72px; }
+    .bar:nth-child(3) { height: 46px; }
+    .bar:nth-child(4) { height: 100px; }
+    .bar:nth-child(5) { height: 62px; }
+    .bar:nth-child(6) { height: 118px; }
+    .bar:nth-child(7) { height: 80px; }
+    .bar:nth-child(8) { height: 44px; }
+    .bar:nth-child(9) { height: 94px; }
+    .bar:nth-child(10) { height: 54px; }
+    .bar:nth-child(11) { height: 120px; }
+    .bar:nth-child(12) { height: 76px; }
+
+    .mock-cards {
+      padding: 8px 22px 22px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .mock-card {
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.075);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .mock-card strong {
+      display: block;
+      margin-bottom: 7px;
+    }
+
+    .mock-card span {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .section {
+      padding: 52px 0;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .section h2 {
+      font-size: clamp(30px, 4vw, 50px);
+      line-height: 1.05;
+      letter-spacing: -0.045em;
+      margin: 0;
+    }
+
+    .section .lead {
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 540px;
+      margin: 0;
+    }
+
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .project-card {
+      position: relative;
+      padding: 26px;
+      min-height: 370px;
+      border-radius: var(--radius);
+      background: var(--card);
+      border: 1px solid var(--line);
+      overflow: hidden;
+      box-shadow: 0 18px 60px rgba(0, 0, 0, 0.26);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.22s ease, background 0.22s ease, border-color 0.22s ease;
+    }
+
+    .project-card:hover {
+      transform: translateY(-6px);
+      background: var(--card-strong);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .project-card::before {
+      content: "";
+      position: absolute;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      top: -92px;
+      right: -74px;
+      opacity: 0.28;
+      filter: blur(2px);
+      background: var(--accent);
+    }
+
+    .project-icon {
+      width: 54px;
+      height: 54px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      font-size: 25px;
+      background: rgba(255, 255, 255, 0.09);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      margin-bottom: 22px;
+    }
+
+    .project-card h3 {
+      margin: 0 0 12px;
+      font-size: 27px;
+      letter-spacing: -0.035em;
+    }
+
+    .project-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.62;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 20px 0 26px;
+    }
+
+    .tag {
+      font-size: 12px;
+      color: #dfe6ff;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .card-footer {
+      margin-top: auto;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .mini-link {
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .feature-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .feature {
+      padding: 18px;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--line);
+    }
+
+    .feature b {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .feature span {
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 14px;
+    }
+
+    .demo {
+      display: grid;
+      grid-template-columns: 0.85fr 1.15fr;
+      gap: 24px;
+      align-items: center;
+      padding: 28px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background:
+        linear-gradient(135deg, rgba(183, 148, 255, 0.14), rgba(117, 244, 230, 0.08)),
+        rgba(255, 255, 255, 0.06);
+      box-shadow: var(--shadow);
+    }
+
+    .demo h2 {
+      margin-bottom: 16px;
+    }
+
+    .demo p {
+      color: var(--muted);
+      line-height: 1.7;
+      margin: 0 0 24px;
+    }
+
+    .video-wrap {
+      border-radius: 24px;
+      overflow: hidden;
+      background: #050711;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: 0 22px 70px rgba(0, 0, 0, 0.35);
+    }
+
+    video {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #050711;
+    }
+
+    .note {
+      margin-top: 12px;
+      color: var(--soft);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    footer {
+      padding: 54px 0 70px;
+      color: var(--soft);
+      text-align: center;
+      font-size: 14px;
+    }
+
+    @media (max-width: 920px) {
+      .hero,
+      .demo {
+        grid-template-columns: 1fr;
+      }
+
+      .project-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .feature-strip {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .section-head {
+        display: block;
+      }
+
+      .section .lead {
+        margin-top: 14px;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .page,
+      .nav-inner {
+        width: min(100% - 28px, 1180px);
+      }
+
+      .nav-inner {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .nav-links {
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 2px;
+      }
+
+      .hero {
+        padding-top: 58px;
+      }
+
+      .hero-panel {
+        min-height: 360px;
+      }
+
+      .feature-strip {
+        grid-template-columns: 1fr;
+      }
+
+      .demo {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a class="brand" href="#">
+        <span class="logo">L</span>
+        <span>Lancer1911 AI Audio</span>
+      </a>
+      <div class="nav-links" aria-label="Site navigation">
+        <a href="#projects">Projects</a>
+        <a href="#demo">Demo Video</a>
+        <a href="https://github.com/lancer1911" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="page">
+    <section class="hero">
+      <div>
+        <div class="eyebrow"><span class="dot"></span> Offline · Privacy-first · Apple Silicon</div>
+        <h1><span class="gradient-text">Local AI audio tools</span> for speech, subtitles, and voice.</h1>
+        <p>
+          A collection of macOS-focused offline AI applications for real-time speech recognition,
+          audio-file transcription, subtitle editing, multilingual correction, and natural text-to-speech generation.
+          Designed for local workflows where privacy, control, and repeatability matter.
+        </p>
+        <div class="actions">
+          <a class="button primary" href="#projects">Explore projects →</a>
+          <a class="button secondary" href="https://github.com/lancer1911" target="_blank" rel="noopener">View on GitHub</a>
+        </div>
+      </div>
+
+      <div class="hero-panel" aria-label="Audio interface preview">
+        <div class="mock-window">
+          <div class="window-bar">
+            <span class="traffic"></span>
+            <span class="traffic"></span>
+            <span class="traffic"></span>
+          </div>
+          <div class="wave" aria-hidden="true">
+            <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
+            <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
+            <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
+          </div>
+          <div class="mock-cards">
+            <div class="mock-card">
+              <strong>Speech Recognition</strong>
+              <span>Live or file-based transcription with local correction and export.</span>
+            </div>
+            <div class="mock-card">
+              <strong>Text to Speech</strong>
+              <span>Generate audiobook-style narration and dialogue entirely on-device.</span>
+            </div>
+            <div class="mock-card">
+              <strong>No Cloud Required</strong>
+              <span>Audio and text stay on your Mac throughout the workflow.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="projects">
+      <div class="section-head">
+        <h2>Three focused tools.</h2>
+        <p class="lead">
+          Each project is built around a different audio workflow: live speech, prepared recordings,
+          and speech synthesis.
+        </p>
+      </div>
+
+      <div class="project-grid">
+        <article class="project-card" style="--accent: #7cc7ff;">
+          <div class="project-icon">🎙️</div>
+          <h3>ASR-Live</h3>
+          <p>
+            Fully offline real-time multilingual speech recognition for Apple Silicon.
+            It captures live audio, transcribes speech, applies LLM-based semantic correction,
+            and can produce multilingual translations without cloud calls.
+          </p>
+          <div class="tags">
+            <span class="tag">Real-time ASR</span>
+            <span class="tag">Whisper / SenseVoice</span>
+            <span class="tag">LLM correction</span>
+            <span class="tag">Local privacy</span>
+          </div>
+          <div class="card-footer">
+            <a class="mini-link" href="https://github.com/lancer1911/ASR-Live" target="_blank" rel="noopener">Open repository</a>
+          </div>
+        </article>
+
+        <article class="project-card" style="--accent: #b794ff;">
+          <div class="project-icon">📝</div>
+          <h3>ASR-Offline</h3>
+          <p>
+            A local audio-file transcription and subtitle editing tool for Apple Silicon Macs.
+            It processes common audio formats, performs ASR, correction, translation,
+            diarization, synchronized playback, and exports practical transcript formats.
+          </p>
+          <div class="tags">
+            <span class="tag">Audio files</span>
+            <span class="tag">Subtitle editing</span>
+            <span class="tag">Diarization</span>
+            <span class="tag">TXT / SRT / JSON / MD</span>
+          </div>
+          <div class="card-footer">
+            <a class="mini-link" href="https://github.com/lancer1911/ASR-Offline" target="_blank" rel="noopener">Open repository</a>
+          </div>
+        </article>
+
+        <article class="project-card" style="--accent: #75f4e6;">
+          <div class="project-icon">🔊</div>
+          <h3>TTS-Offline</h3>
+          <p>
+            Fully offline text-to-speech synthesis for Apple Silicon. It converts text into natural speech
+            using local models, with multi-voice dialogue support, per-sentence emotion control,
+            audiobook-oriented production, and voice cloning from reference audio.
+          </p>
+          <div class="tags">
+            <span class="tag">Text to speech</span>
+            <span class="tag">Multi-voice</span>
+            <span class="tag">Emotion control</span>
+            <span class="tag">Voice cloning</span>
+          </div>
+          <div class="card-footer">
+            <a class="mini-link" href="https://github.com/lancer1911/TTS-Offline" target="_blank" rel="noopener">Open repository</a>
+            <a class="mini-link" href="#demo">Watch demo</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="feature-strip">
+        <div class="feature">
+          <b>Runs locally</b>
+          <span>Designed for on-device processing, with no routine dependency on external APIs.</span>
+        </div>
+        <div class="feature">
+          <b>Apple Silicon first</b>
+          <span>Targets modern M-series Macs and local MLX-oriented AI workflows.</span>
+        </div>
+        <div class="feature">
+          <b>Multilingual</b>
+          <span>Built around practical Chinese, English, Japanese, and translation use cases.</span>
+        </div>
+        <div class="feature">
+          <b>Creator workflow</b>
+          <span>Useful for meetings, subtitles, audiobooks, legal review, demos, and long-form audio work.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="demo">
+      <div class="demo">
+        <div>
+          <div class="eyebrow"><span class="dot"></span> TTS-Offline demo</div>
+          <h2>Generate audiobook-style speech locally.</h2>
+          <p>
+            The current demo video is for TTS-Offline. Place the MP4 file in your GitHub Pages repository,
+            then keep the relative path below or adjust it to match your folder structure.
+          </p>
+          <a class="button primary" href="https://github.com/lancer1911/TTS-Offline" target="_blank" rel="noopener">View TTS-Offline on GitHub →</a>
+          <div class="note">
+            Expected video path: <code>videos/lancer1911-tts-offline.mp4</code>
+          </div>
+        </div>
+
+        <div class="video-wrap">
+          <video controls preload="metadata" poster="">
+            <source src="videos/lancer1911-tts-offline.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    © <span id="year"></span> Lancer1911 · Offline AI audio tools for local-first workflows.
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
